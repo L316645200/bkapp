@@ -20,11 +20,29 @@ class Host(models.Model):
 class HostManager(models.Manager):
     @staticmethod
     def search_host(ip=None):
-        host = Host.objects.all()
+        hosts = Host.objects.all()
         if ip:
-            host = host.filter(bk_host_innerip__icontains=ip)
-        return host
+            hosts = hosts.filter(bk_host_innerip__icontains=ip)
+
+        return hosts
 
     @staticmethod
-    def update_host(remark):
-        pass
+    def update_host(ip, remark):
+        host = Host.objects.filter(bk_host_innerip=ip).first()
+        try:
+            host.remark = remark
+            host.save()
+            result = {'result': True, 'message': u'更改成功'}
+        except Exception, e:
+            result = {'result': False, 'message': u'更改失败, %s' % e}
+        return result
+
+    @staticmethod
+    def del_host(host_id):
+        host = Host.objects.get(id=host_id)
+        try:
+            host.delete()
+            result = {'result': True, 'message': u'更改成功'}
+        except Exception, e:
+            result = {'result': False, 'message': u'更改失败, %s' % e}
+        return result

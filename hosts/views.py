@@ -8,8 +8,20 @@ from hosts.models import HostManager
 
 
 def home(request):
+    hosts = HostManager.search_host()
 
-    return render_mako_context(request, '/hosts/home.html/')
+    data = []
+    for host in hosts:
+        data.append(dict(
+            bk_host_id=host.id,
+            bk_host_name=host.bk_host_name,
+            bk_host_innerip=host.bk_host_innerip,
+            bk_biz_name=host.bk_biz_name,
+            bk_os_name=host.bk_os_name,
+            bk_inst_name=host.bk_inst_name,
+            remark=host.remark,
+        ))
+    return render_mako_context(request, '/hosts/home.html/', {'hosts': data})
 
 
 def search_host(request):
@@ -123,8 +135,14 @@ def search_business(request):
 def update_host(request):
     ip = request.POST.get('ip', '')
     remark = request.POST.get('remark', '')
+    result = HostManager.update_host(ip=ip, remark=remark)
+    return render_json(result)
 
 
+def del_host(request):
+    host_id = request.POST.get('host_id', '')
+    result = HostManager.del_host(host_id=host_id)
+    return render_json(result)
 # def get_app(request):
 #     """
 #     获取所有业务

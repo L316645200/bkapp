@@ -12,5 +12,7 @@ urlpatterns = patterns(
 
     (r'^search_business/$', 'search_business'),
     (r'^get_host/$', 'get_host_by_biz'),
+    (r'^update_host/$', 'update_host'),
+    (r'^del_host/$', 'del_host'),
 
 )
