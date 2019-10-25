@@ -18,6 +18,8 @@ urlpatterns = patterns(
     # 获取作业详情
     # (r'^get_job/$', 'execute_job'),
     # (r'^get_job_2/$', 'execute_free_job'),
-    (r'^get_logs/$', 'get_logs'),
+    (r'^get_capacity/$', 'get_capacity'),
+    (r'^get_mem/$', 'get_mem'),
+    (r'^host_per/$', 'host_performance'),
 
 )

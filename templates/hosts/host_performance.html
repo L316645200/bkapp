@@ -60,7 +60,7 @@
             </nav>
             <div style="width: 50%; height: 300px;float: left; position: relative;" id="chart_1571888931238" class="king-chart-box chart-line  k-chart" data-role="chart"></div>
             <div style="width: 50%; height: 300px;float: left; position: relative;" id="chart_1571888956966" class="king-chart-box chart-pie  k-chart" data-role="chart"></div>
-            <table class="table mb0 pr15 ranger-box ">
+            <table class="table mb0 pr15 ranger-box" id="code_1571889212530">
                 <thead>
                     <tr>
                         <th style="width: 500px;">文件系统</th>
@@ -74,12 +74,12 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td style="width: 500px;">/</td>
-                        <td style="width: 5%;">111</td>
-                        <td style="width: 5%;">111</td>
-                        <td style="width: 5%;">111</td>
-                        <td style="width: 5%;">11%</td>
-                        <td style="width: 5%;">df</td>
+                        <td style="width: 500px;"></td>
+                        <td style="width: 5%;"></td>
+                        <td style="width: 5%;"></td>
+                        <td style="width: 5%;"></td>
+                        <td style="width: 5%;"></td>
+                        <td style="width: 5%;"></td>
                         <td></td>
                     </tr>
                 </tbody>
@@ -98,13 +98,13 @@
             </template>
             <template id="tpl_1571889212530">
                 <tr>
-                    <td style="width: 500px;">##</td>
-                    <td style="width: 5%;">##</td>
-                    <td style="width: 5%;">##</td>
-                    <td style="width: 5%;">##</td>
-                    <td style="width: 5%;">##</td>
-                    <td style="width: 5%;">##</td>
-                    <td>操作</td>
+                    <td style="width: 500px;">#Filesystem#</td>
+                    <td style="width: 5%;">#Size#</td>
+                    <td style="width: 5%;">#Used#</td>
+                    <td style="width: 5%;">#Avail#</td>
+                    <td style="width: 5%;">#Use%#</td>
+                    <td style="width: 5%;">#Mounted#</td>
+                    <td></td>
                 </tr>
             </template>
             <!-- 设置面板End -->
@@ -219,6 +219,7 @@
                 url: conf.url,
                 type: 'GET',
                 dataType: conf.dataType,
+                data: conf.data,
                 success: function(res){
                     //获取数据成功
                     if (res.result){
@@ -237,9 +238,10 @@
     <script>
         $(function(){
             initKendoPieChart({
-                url: 'https://magicbox.bk.tencent.com/static_api/v3/components/charts_pie/demo.json',
+                url: 'http://dev.bk.com:8000/get_mem/',
                 dataType: 'json',
-                container: '#chart_1571888956966'
+                container: '#chart_1571888956966',
+                data: {'host_ip': "${host_ip}"},
             });
         });
     </script>
@@ -258,22 +260,23 @@
                 }
 
                 // 异步请求后台数据
-                {#$.ajax({#}
-                {#    url: 'https://magicbox.bk.tencent.com/static_api/v3/components/table6/data.json',#}
-                {#    type: 'GET',#}
-                {#    success: function(res){#}
-                {#        var _html = ' ';#}
-                {#        var list = res.items;#}
-                {#        var tpl = $('#tpl_1571889212530').html();#}
-                {#        var headerTpl =  $('#header_tpl_1571889212530').html();#}
-                {#        for (var i=0,len=list.length; i < len; i++){#}
-                {#            var item = list[i];#}
-                {#            _html += renderTpl(tpl, item)#}
-                {#        }#}
-                {#        $('#code_1571889212530 tbody').html(_html);#}
-                {#        $('.ranger-box thead').html(renderTpl(headerTpl,res.catalogues));#}
-                {#    }#}
-                {# })#}
+                $.ajax({
+                    url: 'http://dev.bk.com:8000/get_capacity/',
+                    type: 'GET',
+                    data: {'host_ip': "${host_ip}"},
+                    success: function(res){
+                        var _html = ' ';
+                        var list = res.items;
+                        var tpl = $('#tpl_1571889212530').html();
+                        var headerTpl =  $('#header_tpl_1571889212530').html();
+                        for (var i=0,len=list.length; i < len; i++){
+                            var item = list[i];
+                            _html += renderTpl(tpl, item)
+                        }
+                        $('#code_1571889212530 tbody').html(_html);
+                        $('.ranger-box thead').html(renderTpl(headerTpl,res.catalogues));
+                    }
+                 })
             });
     </script>
 </body>

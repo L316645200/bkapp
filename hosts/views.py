@@ -226,8 +226,7 @@ def execute_free_job(request):
     return resp_execute
 
 
-def get_logs(request):
-    task = request.GET.get('task')
+def get_logs(request, task):
     if int(task) == 1:
         job_instance = execute_job(request)
     else:
@@ -269,13 +268,24 @@ def get_logs(request):
                 'Mounted': _l_new[5],
             })
 
-    return render_json({'result': resp.get('result'), 'data': logs_data, 'code': 0})
+    return logs_data
 
 
-def home_performance(request):
+def get_capacity(request):
     capacity_data = get_logs(request, 1)
+
+    return render_json({'items': capacity_data[1:]})
+
+
+def host_performance(request):
+    host_ip = request.GET.get('host_ip')
+    return render_mako_context(request, '/hosts/host_performance.html', {'host_ip': host_ip})
+
+
+def get_mem(request):
     men_data = get_logs(request, 2)
-
-    return render_mako_context(request, '/hosts/home_performance.html',
-                               {'capacity_data': capacity_data, 'men_data': men_data})
-
+    print men_data
+    return render_json({'code': 0, 'result': True, 'message': 'success',
+                        'data': {'title': '',
+                                 'series': [{'category': u'剩余内存容量(G)', 'value': float(men_data[1]['Size']) - float(men_data[1]['Used'])},
+                                            {'category': u'已用内存容量(G)', 'value': float(men_data[1]['Used'])}]}})
