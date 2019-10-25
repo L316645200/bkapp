@@ -128,13 +128,13 @@
                         %if hosts:
                             % for host in hosts:
                             <tr id="host_${host['bk_host_id']}">
-                                <td>${host['bk_host_innerip']}</td>
-                                <td>${host['bk_host_name']}</td>
-                                <td>${host['bk_biz_name']}</td>
-                                <td>${host['bk_inst_name']}</td>
-                                <td>${host['bk_os_name']}</td>
-                                <td>${host['remark']}</td>
-                                <td>
+                                <td style="width: 70px;">${host['bk_host_innerip']}</td>
+                                <td style="width: 15%;">${host['bk_host_name']}</td>
+                                <td style="width: 15%;">${host['bk_biz_name']}</td>
+                                <td style="width: 15%;">${host['bk_inst_name']}</td>
+                                <td style="width: 15%;">${host['bk_os_name']}</td>
+                                <td style="width: 15%;">${host['remark']}</td>
+                                <td style="width: 20%;">
                                     <button type="button" class="btn btn-xs btn-success" data-toggle="modal" data-target="#changeModel"
                                         data-ip="${host['bk_host_innerip']}" data-biz="${host['bk_biz_name']}" data-remark="${host['remark']}">修改</button>
                                     <button class="btn btn-xs btn-success">查看性能</button>
@@ -158,13 +158,13 @@
                 <!-- 设置面板End -->
                 <template id="host_tpl">
                     <tr id="host_#bk_host_id#">
-                        <td>#bk_host_innerip#</td>
-                        <td>#bk_host_name#</td>
-                        <td>#bk_biz_name#</td>
-                        <td>#bk_inst_name#</td>
-                        <td>#bk_os_name#</td>
-                        <td>#remark#</td>
-                        <td>
+                        <td style="width: 70px;">#bk_host_innerip#</td>
+                        <td style="width: 15%;">#bk_host_name#</td>
+                        <td style="width: 15%;">#bk_biz_name#</td>
+                        <td style="width: 15%;">#bk_inst_name#</td>
+                        <td style="width: 15%;">#bk_os_name#</td>
+                        <td style="width: 15%;">#remark#</td>
+                        <td style="width: 20%;">
                             <button type="button" data-ip='#bk_host_innerip#' data-biz='#bk_biz_name#' data-remark='#remark#' class="btn btn-xs btn-success" data-toggle="modal" data-target="#changeModel">修改</button>
                             <button class="btn btn-xs btn-success">查看性能</button>
                             <button type="button" class="btn btn-xs btn-danger" onclick="delHost('#bk_host_id#')"> 删除 </button>
@@ -236,14 +236,14 @@
         })
 
         $("#changeModel").on('show.bs.modal', function(res) {
-        var btn = $(res.relatedTarget );
-        var host_ip = btn.data('ip');
-        var biz_name = btn.data('biz');
-        var remark = btn.data('remark');
+            var btn = $(res.relatedTarget );
+            var host_ip = btn.data('ip');
+            var biz_name = btn.data('biz');
+            var remark = btn.data('remark');
 
-        $('#change_biz').html("<option>" + biz_name + "</option>");
-        $('#change_host').html("<option>" + host_ip + "</option>");
-        $('#change_remark').html(remark);
+            $('#change_biz').html("<option>" + biz_name + "</option>");
+            $('#change_host').html("<option>" + host_ip + "</option>");
+            $('#change_remark').html(remark);
         })
 
         function getBusiness() {

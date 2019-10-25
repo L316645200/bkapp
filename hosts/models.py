@@ -42,7 +42,11 @@ class HostManager(models.Manager):
         host = Host.objects.get(id=host_id)
         try:
             host.delete()
-            result = {'result': True, 'message': u'更改成功'}
+            result = {'result': True, 'message': u'删除成功'}
         except Exception, e:
-            result = {'result': False, 'message': u'更改失败, %s' % e}
+            result = {'result': False, 'message': u'删除失败, %s' % e}
         return result
+
+
+class Logs(models.Model):
+    pass

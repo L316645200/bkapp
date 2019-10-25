@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import json
 # Create your views here.
+import time
+
 from blueking.component.shortcuts import get_client_by_request
 from common.mymako import render_mako_context, render_json
 from hosts import models
@@ -143,62 +145,137 @@ def del_host(request):
     host_id = request.POST.get('host_id', '')
     result = HostManager.del_host(host_id=host_id)
     return render_json(result)
-# def get_app(request):
-#     """
-#     获取所有业务
-#     """
-#     app_list = []
-#     client = get_client_by_request(request)
-#     kwargs = {}
-#     resp = client.cc.get_app_list(**kwargs)
-#
-#     if resp.get('result'):
-#         data = resp.get('data', {})
-#         for _d in data:
-#             app_list.append({
-#                 'name': _d.get('ApplicationName'),
-#                 'id': _d.get('ApplicationID'),
-#             })
-#
-#     result = {'result': resp.get('result'), 'data': app_list}
-#     return render_json(result)
-#
-#
-# def get_ip_by_appid(request):
-#     app_id = request.GET.get('app_id')
-#     client = get_client_by_request(request)
-#     kwargs = {'app_id': app_id}
-#     resp = client.cc.get_app_host_list(**kwargs)
-#
-#     ip_list = []
-#     if resp.get('result'):
-#         data = resp.get('data', [])
-#         for _d in data:
-#             if _d.get('InnerIP') not in ip_list:
-#                 ip_list.append(_d.get('InnerIP'))
-#     ip_all = [{'ip': _ip} for _ip in ip_list]
-#     result = {'result': resp.get('result'), 'data': ip_all}
-#     return render_json(result)
-#
-#
-# def get_task_id_by_appid(request):
-#     app_id = request.GET.get('app_id')
-#     client = get_client_by_request(request)
-#     kwargs = {'app_id': app_id}
-#     resp = client.job.get_task(**kwargs)
-#
-#     task_list = []
-#     if resp.get('result'):
-#         data = resp.get('data', [])
-#         for _d in data:
-#             task_list.append({
-#                 'task_id': _d.get('id'),
-#                 'task_name': _d.get('name'),
-#             })
-#     result = {'result': resp.get('result'), 'data': task_list}
-#     return render_json(result)
+
+
+def get_capacitysss(request):
+    bk_biz_id = 2
+    bk_job_id = 2
+    steps = [{
+        "step_id": 2,
+        "account": "root",
+        "ip_list": [
+            {
+                "bk_cloud_id": 0,
+                "ip": "172.16.150.37"
+            }],
+    }]
+    client = get_client_by_request(request)
+    kwargs = {'bk_biz_id': bk_biz_id, 'bk_job_id': bk_job_id, 'steps': steps}
+    resp = client.job.execute_job(**kwargs)
+    print resp
+    task_list = []
+
+    if resp.get('result'):
+        data = resp.get('data', [])
+        for _d in data:
+            task_list.append({
+                'task_id': _d.get('bk_biz_id'),
+                'task_name': _d.get('name'),
+                'bk_job_id': _d.get('bk_job_id'),
+            })
+    result = {'result': resp.get('result'), 'data': task_list}
+    return render_json(result)
 
 
 def test(request):
     username = request.user.username
     return render_json({'username': username, 'result': 'OK'})
+
+
+BK_BIZ_ID = 2
+GET_JOB_ID = 2
+FREE_JOB_ID = 4
+
+
+def execute_job(request):
+    host_ip = request.GET.get('host_ip')
+    client = get_client_by_request(request)
+    kwargs = {'bk_biz_id': BK_BIZ_ID, 'bk_job_id': GET_JOB_ID}
+    resp = client.job.get_job_detail(**kwargs)
+
+    ip_list = resp['data']['steps'][0]['ip_list']
+    for _ip in ip_list:
+        if _ip['ip'] == host_ip:
+            resp['data']['steps'][0]['ip_list'] = [_ip]
+            break
+    else:
+        raise
+    steps = resp['data']['steps']
+    kwargs.update({'steps': steps})
+
+    resp_execute = client.job.execute_job(**kwargs)
+    return resp_execute
+
+
+def execute_free_job(request):
+    host_ip = request.GET.get('host_ip')
+    client = get_client_by_request(request)
+    kwargs = {'bk_biz_id': BK_BIZ_ID, 'bk_job_id': FREE_JOB_ID}
+    resp = client.job.get_job_detail(**kwargs)
+
+    ip_list = resp['data']['steps'][0]['ip_list']
+    for _ip in ip_list:
+        if _ip['ip'] == host_ip:
+            resp['data']['steps'][0]['ip_list'] = [_ip]
+            break
+    else:
+        raise
+    steps = resp['data']['steps']
+    kwargs.update({'steps': steps})
+    resp_execute = client.job.execute_job(**kwargs)
+    return resp_execute
+
+
+def get_logs(request):
+    task = request.GET.get('task')
+    if int(task) == 1:
+        job_instance = execute_job(request)
+    else:
+        job_instance = execute_free_job(request)
+    if job_instance.get('data'):
+        job_instance_id = job_instance['data']['job_instance_id']
+    else:
+        raise
+    kwargs = {'bk_biz_id': BK_BIZ_ID, 'job_instance_id': job_instance_id}
+
+    client = get_client_by_request(request)
+    for i in range(10):
+        status = client.job.get_job_instance_status(**kwargs)
+        if status['data']['is_finished'] is True:
+            resp = client.job.get_job_instance_log(**kwargs)
+            break
+        else:
+            time.sleep(0.1)
+    else:
+        raise
+
+    ip_log = resp['data'][0]['step_results'][0]['ip_logs'][0]
+    # ip = ip_log['ip']
+    logs = ip_log['log_content']
+
+    logs = logs.split('\n')
+    logs = [_l.split(' ') for _l in logs]
+    logs_data = []
+
+    for log in logs[1:]:
+        _l_new = [_l for _l in log if _l != '']
+        if _l_new and len(_l_new) >= 5:
+            logs_data.append({
+                'Filesystem': _l_new[0],  # total used free shared buff/cache available
+                'Size': _l_new[1],
+                'Used': _l_new[2],
+                'Avail': _l_new[3],
+                'Use%': _l_new[4],
+                'Mounted': _l_new[5],
+            })
+
+    return render_json({'result': resp.get('result'), 'data': logs_data, 'code': 0})
+
+
+def home_performance(request):
+    capacity_data = get_logs(request, 1)
+    men_data = get_logs(request, 2)
+
+    return render_mako_context(request, '/hosts/home_performance.html',
+                               {'capacity_data': capacity_data, 'men_data': men_data})
+

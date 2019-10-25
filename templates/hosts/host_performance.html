@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+    <!-- 若您需要使用Kendo UI Professional，请联系版权人获得合法的授权或许可。 -->
+    <!-- Bootstrap css -->
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/bootstrap-3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <!-- kendo ui css -->
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/kendoui-2015.2.624/styles/kendo.common.min.css" rel="stylesheet">
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/kendoui-2015.2.624/styles/kendo.default.min.css" rel="stylesheet">
+    <!-- font-awesome -->
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/fontawesome/css/font-awesome.css" rel="stylesheet">
+    <!--蓝鲸提供的公用样式库 -->
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/bk/css/bk.css" rel="stylesheet">
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/bk/css/bk_pack.css" rel="stylesheet">
+    <!-- 如果要使用Bootstrap的js插件，必须先调入jQuery -->
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/js/jquery-1.10.2.min.js"></script>
+    <!-- 包括所有bootstrap的js插件或者可以根据需要使用的js插件调用　-->
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/echarts-2.0/echarts-all.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <!-- 包括所有kendoui的js插件或者可以根据需要使用的js插件调用　-->
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/kendoui-2015.2.624/js/kendo.all.min.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/echarts-2.0/echarts-all.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/bk/js/bk.js"></script>
+    <!-- 数据埋点统计 -->
+    <script src="http://magicbox.bk.tencent.com/static_api/analysis.js"></script>
+    <!-- 以下两个插件用于在IE8以及以下版本浏览器支持HTML5元素和媒体查询，如果不需要用可以移除 -->
+    <!--[if lt IE 9]><script src="https://magicbox.bk.tencent.com/static_api/v3/assets/js/html5shiv.min.js"></script><script src="https://magicbox.bk.tencent.com/static_api/v3/assets/js/respond.min.js"></script><![endif]-->
+</head>
+
+<body class="bg-white" data-bg-color="bg-white">
+    <div class="king-page-box">
+        <div class="king-container clearfix">
+            <nav class="">
+                <div style="overflow:hidden; z-index: inherit;" class="navbar king-horizontal-nav1  f14">
+                    <div class="navbar-container">
+                        <div class="navbar-header pull-left">
+                            <a class="navbar-brand" href="javascript:;">
+                                <img src="https://magicbox.bk.tencent.com/static_api/v3/bk/images/logo.png" class="logo"> </a>
+                        </div>
+                        <ul class="nav navbar-nav pull-left m0">
+                            <li class="active"><a href="javascript:void(0);">性能详情</a></li>
+                        </ul>
+                        <div class="navbar-header pull-right">
+                            <ul class="nav">
+                                <li class="user-info">
+                                    <a href="javascript:;">
+                                        <img class="img-rounded" src="https://magicbox.bk.tencent.com/static_api/v3/components/horizontal_nav1/images/avatar.png">
+                                        <span>admin</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            <div style="width: 50%; height: 300px;float: left; position: relative;" id="chart_1571888931238" class="king-chart-box chart-line  k-chart" data-role="chart"></div>
+            <div style="width: 50%; height: 300px;float: left; position: relative;" id="chart_1571888956966" class="king-chart-box chart-pie  k-chart" data-role="chart"></div>
+            <table class="table mb0 pr15 ranger-box ">
+                <thead>
+                    <tr>
+                        <th style="width: 500px;">文件系统</th>
+                        <th style="width: 5%;">总大小</th>
+                        <th style="width: 5%;">已用大小</th>
+                        <th style="width: 5%;">可用大小</th>
+                        <th style="width: 5%;">使用率</th>
+                        <th style="width: 5%;">挂载点</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="width: 500px;">/</td>
+                        <td style="width: 5%;">111</td>
+                        <td style="width: 5%;">111</td>
+                        <td style="width: 5%;">111</td>
+                        <td style="width: 5%;">11%</td>
+                        <td style="width: 5%;">df</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- 设置面板Start -->
+            <template id="header_tpl_1571889212530">
+                <tr>
+                    <th style="width: 500px;">文件系统</th>
+                    <th style="width: 5%;">总大小</th>
+                    <th style="width: 5%;">已用大小</th>
+                    <th style="width: 5%;">可用大小</th>
+                    <th style="width: 5%;">使用率</th>
+                    <th style="width: 5%;">挂载点</th>
+                    <th>操作</th>
+                </tr>
+            </template>
+            <template id="tpl_1571889212530">
+                <tr>
+                    <td style="width: 500px;">##</td>
+                    <td style="width: 5%;">##</td>
+                    <td style="width: 5%;">##</td>
+                    <td style="width: 5%;">##</td>
+                    <td style="width: 5%;">##</td>
+                    <td style="width: 5%;">##</td>
+                    <td>操作</td>
+                </tr>
+            </template>
+            <!-- 设置面板End -->
+        </div>
+    </div>
+    <script>
+        // 创建图表
+        function createKendoLineChart(conf){
+            $(conf.selector).kendoChart({
+                transitions: false,
+                legend: {
+                   position: "bottom"
+                },
+                colors: ['yellow'],
+                theme : 'bootstrap',
+                seriesDefaults: {
+                    type: 'line',
+                    style: "smooth",
+                    markers: {
+                        visible: false
+                    }
+                },
+                series: conf.data.series,
+                categoryAxis: {
+                    majorGridLines : {
+                        visible: false
+                    },
+                    categories: conf.data.categories,
+                    labels: {
+                        rotation: "auto"
+                    }
+                },
+                tooltip: {
+                    visible: true,
+                    template: "#= category # #= value #"
+                }
+            });
+            //重新绘制
+            $(window).on('resize',function(){
+                var chart = $(conf.selector).data("kendoChart");
+                chart.redraw();
+            });
+        }
+
+        function initKendoLineChart(conf){
+            // 异步请求后台数据
+            $.ajax({
+                url: conf.url,
+                type: 'GET',
+                dataType: conf.dataType,
+                success: function(res){
+                    //获取数据成功
+                    if (res.result){
+                        var data = {
+                            series: res.data.series,
+                            categories: res.data.categories
+                        };
+                        createKendoLineChart({
+                            selector: conf.container, // 图表容器
+                            data: data // 图表数据
+                        });
+                    }
+                }
+            });
+        }
+    </script>
+    <script>
+        $(function(){
+            initKendoLineChart({
+                url: 'https://magicbox.bk.tencent.com/static_api/v3/components/charts_line/demo.json',
+                dataType: 'json',
+                container: '#chart_1571888931238'
+            });
+        });
+    </script>
+    <script>
+        // 创建图表
+        function createKendoPieChart(conf){
+            $(conf.selector).kendoChart({
+                title: {
+                    text: conf.data.title
+                },
+                legend: {
+                   position: "bottom"
+                },
+                theme : 'bootstrap',
+                seriesDefaults: {
+                    labels: {
+                        template: "#= category # - #= kendo.format('{0:P}', percentage)#",
+                        position: "outsideEnd",
+                        visible: true,
+                        background: "transparent"
+                    }
+                },
+                series: [{
+                    type: 'pie',
+                    data: conf.data.series
+                }],
+                tooltip: {
+                    visible: true,
+                    template: "#= category # - #= kendo.format('{0:P}', percentage) #"
+                }
+            });
+            $(window).resize(function(){
+                $(conf.selector).data("kendoChart").refresh();
+            });
+        }
+
+        function initKendoPieChart(conf){
+            // 异步请求后台数据
+            $.ajax({
+                url: conf.url,
+                type: 'GET',
+                dataType: conf.dataType,
+                success: function(res){
+                    //获取数据成功
+                    if (res.result){
+                        var data = {
+                            series: res.data.series
+                        };
+                        createKendoPieChart({
+                            selector: conf.container, // 图表容器
+                            data: data // 图表数据
+                        });
+                    }
+                }
+            });
+        }
+    </script>
+    <script>
+        $(function(){
+            initKendoPieChart({
+                url: 'https://magicbox.bk.tencent.com/static_api/v3/components/charts_pie/demo.json',
+                dataType: 'json',
+                container: '#chart_1571888956966'
+            });
+        });
+    </script>
+    <script>
+        $(function(){
+                function renderTpl(str, cfg) {
+                    var re = /(#(.+?)#)/g;
+
+                    return str.replace(re, function() {
+                        var val = cfg[arguments[2]]+'';
+                        if(typeof val == 'undefined') {
+                            val = '';
+                        }
+                        return val;
+                    });
+                }
+
+                // 异步请求后台数据
+                {#$.ajax({#}
+                {#    url: 'https://magicbox.bk.tencent.com/static_api/v3/components/table6/data.json',#}
+                {#    type: 'GET',#}
+                {#    success: function(res){#}
+                {#        var _html = ' ';#}
+                {#        var list = res.items;#}
+                {#        var tpl = $('#tpl_1571889212530').html();#}
+                {#        var headerTpl =  $('#header_tpl_1571889212530').html();#}
+                {#        for (var i=0,len=list.length; i < len; i++){#}
+                {#            var item = list[i];#}
+                {#            _html += renderTpl(tpl, item)#}
+                {#        }#}
+                {#        $('#code_1571889212530 tbody').html(_html);#}
+                {#        $('.ranger-box thead').html(renderTpl(headerTpl,res.catalogues));#}
+                {#    }#}
+                {# })#}
+            });
+    </script>
+</body>
+
+</html>
