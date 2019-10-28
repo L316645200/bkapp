@@ -9,6 +9,7 @@ from hosts import models
 from hosts.models import HostManager
 
 
+# 主机主页
 def home(request):
     hosts = HostManager.search_host()
 
@@ -26,6 +27,7 @@ def home(request):
     return render_mako_context(request, '/hosts/home.html/', {'hosts': data})
 
 
+# 查询主机（本地）
 def search_host(request):
     ip = request.GET.get('ip', '')
     hosts = HostManager.search_host(ip=ip)
@@ -46,6 +48,7 @@ def search_host(request):
     return render_json(result)
 
 
+# 添加主机
 def add_host(request):
     ip = request.POST.get('ip', '')
     if not ip:
@@ -77,6 +80,7 @@ def add_host(request):
     return render_json(result)
 
 
+# 查询主机对象输出字典
 def host_object_output(host_list):
     host_obj = {}
     if host_list.get('data'):
@@ -97,6 +101,7 @@ def host_object_output(host_list):
     return host_obj
 
 
+# 通过业务查询主机（蓝鲸API）
 def get_host_by_biz(request):
     bk_biz_id = request.GET.get('bk_biz_id', '')
     condition = [{
@@ -121,6 +126,7 @@ def get_host_by_biz(request):
     return render_json(result)
 
 
+# 查询业务
 def search_business(request):
     kwargs = {}
     client = get_client_by_request(request)
@@ -134,6 +140,7 @@ def search_business(request):
     return render_json(result)
 
 
+# 更新主机备注
 def update_host(request):
     ip = request.POST.get('ip', '')
     remark = request.POST.get('remark', '')
@@ -141,56 +148,30 @@ def update_host(request):
     return render_json(result)
 
 
+# 删除主机
 def del_host(request):
     host_id = request.POST.get('host_id', '')
     result = HostManager.del_host(host_id=host_id)
     return render_json(result)
 
 
-def get_capacitysss(request):
-    bk_biz_id = 2
-    bk_job_id = 2
-    steps = [{
-        "step_id": 2,
-        "account": "root",
-        "ip_list": [
-            {
-                "bk_cloud_id": 0,
-                "ip": "172.16.150.37"
-            }],
-    }]
-    client = get_client_by_request(request)
-    kwargs = {'bk_biz_id': bk_biz_id, 'bk_job_id': bk_job_id, 'steps': steps}
-    resp = client.job.execute_job(**kwargs)
-    print resp
-    task_list = []
-
-    if resp.get('result'):
-        data = resp.get('data', [])
-        for _d in data:
-            task_list.append({
-                'task_id': _d.get('bk_biz_id'),
-                'task_name': _d.get('name'),
-                'bk_job_id': _d.get('bk_job_id'),
-            })
-    result = {'result': resp.get('result'), 'data': task_list}
-    return render_json(result)
-
-
+# 测试API
 def test(request):
     username = request.user.username
     return render_json({'username': username, 'result': 'OK'})
 
 
 BK_BIZ_ID = 2
-GET_JOB_ID = 2
+DISK_JOB_ID = 2
 FREE_JOB_ID = 4
+LOAD_JOB_ID = 5
 
 
-def execute_job(request):
+# 执行作业
+def execute_job(request, bk_job_id):
     host_ip = request.GET.get('host_ip')
     client = get_client_by_request(request)
-    kwargs = {'bk_biz_id': BK_BIZ_ID, 'bk_job_id': GET_JOB_ID}
+    kwargs = {'bk_biz_id': BK_BIZ_ID, 'bk_job_id': bk_job_id}
     resp = client.job.get_job_detail(**kwargs)
 
     ip_list = resp['data']['steps'][0]['ip_list']
@@ -199,42 +180,25 @@ def execute_job(request):
             resp['data']['steps'][0]['ip_list'] = [_ip]
             break
     else:
-        raise
-    steps = resp['data']['steps']
-    kwargs.update({'steps': steps})
-
-    resp_execute = client.job.execute_job(**kwargs)
-    return resp_execute
-
-
-def execute_free_job(request):
-    host_ip = request.GET.get('host_ip')
-    client = get_client_by_request(request)
-    kwargs = {'bk_biz_id': BK_BIZ_ID, 'bk_job_id': FREE_JOB_ID}
-    resp = client.job.get_job_detail(**kwargs)
-
-    ip_list = resp['data']['steps'][0]['ip_list']
-    for _ip in ip_list:
-        if _ip['ip'] == host_ip:
-            resp['data']['steps'][0]['ip_list'] = [_ip]
-            break
-    else:
-        raise
+        raise Exception('job ip error')
     steps = resp['data']['steps']
     kwargs.update({'steps': steps})
     resp_execute = client.job.execute_job(**kwargs)
     return resp_execute
 
 
+# 获取日志
 def get_logs(request, task):
     if int(task) == 1:
-        job_instance = execute_job(request)
+        job_instance = execute_job(request, DISK_JOB_ID)
+    elif int(task) == 3:
+        job_instance = execute_job(request, LOAD_JOB_ID)
     else:
-        job_instance = execute_free_job(request)
+        job_instance = execute_job(request, FREE_JOB_ID)
     if job_instance.get('data'):
         job_instance_id = job_instance['data']['job_instance_id']
     else:
-        raise
+        raise Exception('job run error')
     kwargs = {'bk_biz_id': BK_BIZ_ID, 'job_instance_id': job_instance_id}
 
     client = get_client_by_request(request)
@@ -246,7 +210,7 @@ def get_logs(request, task):
         else:
             time.sleep(0.1)
     else:
-        raise
+        raise Exception('log error')
 
     ip_log = resp['data'][0]['step_results'][0]['ip_logs'][0]
     # ip = ip_log['ip']
@@ -255,7 +219,8 @@ def get_logs(request, task):
     logs = logs.split('\n')
     logs = [_l.split(' ') for _l in logs]
     logs_data = []
-
+    if int(task) == 3:
+        return logs
     for log in logs[1:]:
         _l_new = [_l for _l in log if _l != '']
         if _l_new and len(_l_new) >= 5:
@@ -271,21 +236,27 @@ def get_logs(request, task):
     return logs_data
 
 
+# 查看主机性能页面
+def host_performance(request):
+    host_ip = request.GET.get('host_ip')
+    return render_mako_context(request, '/hosts/host_performance.html', {'host_ip': host_ip})
+
+
+# 获取磁盘日志
 def get_capacity(request):
     capacity_data = get_logs(request, 1)
 
     return render_json({'items': capacity_data[1:]})
 
 
-def host_performance(request):
-    host_ip = request.GET.get('host_ip')
-    return render_mako_context(request, '/hosts/host_performance.html', {'host_ip': host_ip})
-
-
+# 获取内存日志
 def get_mem(request):
     men_data = get_logs(request, 2)
-    print men_data
     return render_json({'code': 0, 'result': True, 'message': 'success',
                         'data': {'title': '',
                                  'series': [{'category': u'剩余内存容量(G)', 'value': float(men_data[1]['Size']) - float(men_data[1]['Used'])},
                                             {'category': u'已用内存容量(G)', 'value': float(men_data[1]['Used'])}]}})
+
+
+
+

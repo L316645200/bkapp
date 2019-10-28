@@ -7,7 +7,7 @@ from django.db import models
 
 class Host(models.Model):
     bk_host_name = models.CharField(max_length=100)
-    bk_host_innerip = models.CharField(max_length=32, null=False, unique=True)
+    bk_host_innerip = models.CharField(max_length=32, unique=True)
     bk_biz_name = models.CharField(max_length=100)  # 业务名称
     bk_os_name = models.CharField(max_length=100)  # 系统名称
     bk_inst_name = models.CharField(max_length=100)  # 云区域
@@ -47,6 +47,22 @@ class HostManager(models.Manager):
             result = {'result': False, 'message': u'删除失败, %s' % e}
         return result
 
+    @staticmethod
+    def add_host_load(ip, load, now=None):
+        try:
+            HostLoad.objects.create(
+                host_ip=ip,
+                load=load,
+                create_at=now,
+            )
+        except Exception, e:
+            pass
 
-class Logs(models.Model):
-    pass
+
+class HostLoad(models.Model):
+    host_ip = models.CharField(max_length=32)
+    load = models.FloatField()
+    create_at = models.DateTimeField()
+
+    class Meta:
+        db_table = 'host_load'

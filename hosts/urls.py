@@ -21,5 +21,6 @@ urlpatterns = patterns(
     (r'^get_capacity/$', 'get_capacity'),
     (r'^get_mem/$', 'get_mem'),
     (r'^host_per/$', 'host_performance'),
-
+    # 负载测试
+    (r'^host_load/$', 'host_load'),
 )
