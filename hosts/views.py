@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime
 import json
 # Create your views here.
 import time
@@ -257,6 +258,34 @@ def get_mem(request):
                                  'series': [{'category': u'剩余内存容量(G)', 'value': float(men_data[1]['Size']) - float(men_data[1]['Used'])},
                                             {'category': u'已用内存容量(G)', 'value': float(men_data[1]['Used'])}]}})
 
+
+def host_load(request):
+    host_ip = request.GET.get('host_ip')
+    date_now = request.GET.get('to_time')
+    hour_ago = request.GET.get('from_time')
+
+    date_now = datetime.datetime.strptime(date_now.replace("&nbsp;", " ").replace("/", "-") + ':00', '%Y-%m-%d %H:%M:%S') if date_now else datetime.datetime.now()
+    hour_ago = datetime.datetime.strptime(hour_ago.replace("&nbsp;", " ").replace("/", "-") + ':00', '%Y-%m-%d %H:%M:%S') if hour_ago else date_now - datetime.timedelta(hours=1)
+
+    loads = HostManager.search_host_load(host_ip, date_now, hour_ago)
+    is_true = True
+    if len(loads) > 90:
+        is_true = False
+    if not loads:
+        data = []
+        categories = []
+    else:
+        data, categories = zip(*[(_load.load, str(_load.create_at)) for _load in loads])
+
+    result = {"code": 0, "result": is_true, "message": "success", "data": {
+        "series": [{
+            "color": "#f9ce1d",
+            "name": "五分钟平均负载(近一小时)",
+            "data": list(data),
+        }],
+        "categories": list(categories),
+    }}
+    return render_json(result)
 
 
 

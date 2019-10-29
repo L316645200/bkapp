@@ -58,6 +58,11 @@ class HostManager(models.Manager):
         except Exception, e:
             pass
 
+    @staticmethod
+    def search_host_load(host_ip, date_now, hour_ago):
+        loads = HostLoad.objects.filter(host_ip=host_ip, create_at__range=(hour_ago, date_now)).order_by('create_at')
+        return loads
+
 
 class HostLoad(models.Model):
     host_ip = models.CharField(max_length=32)

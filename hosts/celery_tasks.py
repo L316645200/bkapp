@@ -5,7 +5,6 @@ import datetime
 from celery import task
 from celery.schedules import crontab
 from celery.task import periodic_task
-
 from blueking.component.shortcuts import get_client_by_user
 from common.log import logger
 from common.mymako import render_json
