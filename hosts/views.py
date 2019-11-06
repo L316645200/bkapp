@@ -289,3 +289,78 @@ def host_load(request):
 
 
 
+# -*- coding: utf-8 -*-
+from django.shortcuts import render
+# Create your views here.
+from django.shortcuts import render_to_response
+from django.http import JsonResponse
+
+from account.decorators import login_exempt
+from hosts.models import Host
+
+
+@login_exempt
+def api_disk_usage(request):
+    """
+    磁盘使用率API接口 api/get_dfusage_bay1
+    """
+    ip = request.GET.get('ip', '')
+    ip = '172.16.150.37'
+    if ip:
+        hosts = Host.objects.filter(bk_host_innerip=ip)
+
+    else:
+        return JsonResponse({
+            "result": False,
+            "data": [],
+            "message": '参数不完整'
+        })
+
+    data_list = []
+    for _data in hosts:
+        disk_usages = _data.DiskUsage.all()
+        memory_usages = _data.MemoryUsage.all()
+        disk_usage_add_time, disk_usage_value = model_data_format(disk_usages)
+        memory_usage_add_time, memory_usage_value = model_data_format(memory_usages)
+
+        data_list.append(
+            {
+                'ip': _data.bk_host_innerip,
+                'system': _data.bk_os_name,
+                'disk_usage': {
+                    "xAxis": disk_usage_add_time,
+                    "series": [
+                        {
+                            "name": "磁盘使用率",
+                            "type": "line",
+                            "data": disk_usage_value
+                        }
+                    ]
+                },
+                'memory_usage': {
+                    "xAxis": memory_usage_add_time,
+                    "series": [
+                        {
+                            "name": "内存使用率",
+                            "type": "line",
+                            "data": memory_usage_value
+                        }
+                    ]
+                }
+            }
+        )
+
+    return JsonResponse({
+        "result": True,
+        "data": data_list,
+        "message": 'ok'
+    })
+
+
+def model_data_format(usages):
+    usage_add_time = []
+    usage_value = []
+    for usage in usages:
+        usage_add_time.append(usage.add_time.strftime("%Y/%m/%d %H:%M:%S"))
+        usage_value.append(usage.value)
+    return usage_add_time, usage_value

@@ -23,4 +23,6 @@ urlpatterns = patterns(
     (r'^host_per/$', 'host_performance'),
     # 负载测试
     (r'^host_load/$', 'host_load'),
+    (r'api/c/compapi/v2/get_usage_disk/$', 'api_disk_usage'),
+
 )

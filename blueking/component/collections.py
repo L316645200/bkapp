@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Collections for component client"""
+from blueking.component.apis.get_usage_disk import CollectionsGetDfusage
 from .apis.bk_login import CollectionsBkLogin
 from .apis.bk_paas import CollectionsBkPaas
 from .apis.cc import CollectionsCC
@@ -18,4 +19,5 @@ AVAILABLE_COLLECTIONS = {
     'gse': CollectionsGSE,
     'job': CollectionsJOB,
     'sops': CollectionsSOPS,
+    'self_server': CollectionsGetDfusage,
 }

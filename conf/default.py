@@ -120,7 +120,8 @@ INSTALLED_APPS = (
     'account',
     'home_application',
     'iwork',
-    'hosts'
+    'hosts',
+    'disk',
 )
 
 # ==============================================================================

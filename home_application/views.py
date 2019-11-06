@@ -38,3 +38,5 @@ def hello(request):
     hello
     """
     return render_mako_context(request, '/home_application/host_performance.html')
+
+
