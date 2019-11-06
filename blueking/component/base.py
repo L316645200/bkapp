@@ -67,10 +67,7 @@ class ComponentAPI(object):
 
         # Request remote server
         try:
-            print self.method
-            print self.url
             resp = self.client.request(self.method, self.url, params=params, data=data)
-            print resp
         except Exception, e:
             logger.exception('Error occurred when requesting method=%s url=%s',
                              self.method, self.url)

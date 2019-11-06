@@ -305,7 +305,6 @@ def api_disk_usage(request):
     磁盘使用率API接口 api/get_dfusage_bay1
     """
     ip = request.GET.get('ip', '')
-    ip = '172.16.150.37'
     if ip:
         hosts = Host.objects.filter(bk_host_innerip=ip)
 

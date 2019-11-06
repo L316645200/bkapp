@@ -30,7 +30,7 @@ urlpatterns = patterns(
     url(r'^iwork', include('iwork.urls')),
     # 主机
     url(r'^', include('hosts.urls')),
-    url(r'^disks/', include('disk.urls')),
+    url(r'^disks', include('disk.urls')),
 )
 
 
